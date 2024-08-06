@@ -14,6 +14,10 @@ const Home = () => {
   const [puntaje, setPuntaje] = useState(null);
   const [shouldHide,setShouldHide] = useState(false); 
 
+  function timerCallback() {
+    return alert("¡Se te termino el tiempo!");
+  };
+
   // Generar número aleatorio
   const generateRandomNumber = () => {
 
@@ -34,6 +38,7 @@ const Home = () => {
         const response = await api.get('/countries/flag/images'); // Traemos todos los datos de la API
         setCountries(response.data.data); // Metemos todos los países y las banderas en countries
         generateRandomNumber();
+        setTimeout(timerCallback, 15000);
       } catch (error) {
         setError(error.message);
       } finally {
