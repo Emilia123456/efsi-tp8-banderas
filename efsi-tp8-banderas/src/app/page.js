@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import api from './api';
 import { useEffect, useState } from 'react';
-import styles from './page.module.css'; // Importa el archivo CSS
+import styles from './page.module.css'; 
 
 const Home = () => {
   const [countries, setCountries] = useState([]);
@@ -11,13 +11,21 @@ const Home = () => {
   const [randomNumber, setRandomNumber] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState(null);
+  const [puntaje, setPuntaje] = useState(null);
+  const [shouldHide,setShouldHide] = useState(false); 
 
   // Generar número aleatorio
   const generateRandomNumber = () => {
-    const rnd = Math.floor(Math.random() * 100); // Genera un número entre 0 y 99
+
+    if(result == null && countries.length > 0){
+      setPuntaje(puntaje-1);
+    }
+
+    const rnd = Math.floor(Math.random() * 100); 
     setRandomNumber(rnd);
-    setInputValue(''); // Resetea el valor del input
-    setResult(null); // Resetea el resultado
+    setInputValue(''); 
+    setResult(null); 
+    setShouldHide(false);
   };
 
   useEffect(() => {
@@ -43,14 +51,17 @@ const Home = () => {
     setInputValue(e.target.value);
   };
 
-  const verificarIngreso = () => {
+  const verificarIngreso = () => {    
     if (randomNumber !== null) {
       const countryName = countries[randomNumber].name.toLowerCase();
       const userInput = inputValue.toLowerCase();
       if (userInput === countryName) {
-        setResult('Correcto');
+        setResult('Correcto');        
+        setPuntaje(puntaje+10);
+        setShouldHide(true);
       } else {
         setResult('Incorrecto');
+        setPuntaje(puntaje-1);
       }
     }
   };
@@ -60,6 +71,7 @@ const Home = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Adivina la Bandera</h1>
         <h2 className={styles.description}>Ingrese el nombre correspondiente</h2>
+
         {randomNumber !== null && countries.length > 0 && (
           <div className={styles.flag}>
             <Image 
@@ -70,6 +82,7 @@ const Home = () => {
               className={styles.flagImage}
             />
             <p>{countries[randomNumber].name}</p>
+            <p>Puntaje: {puntaje}</p>
           </div>
         )}
 
@@ -79,9 +92,9 @@ const Home = () => {
             value={inputValue} 
             onChange={handleInputChange} 
             placeholder="Nombre del país"
-            className={styles.input} // Añade una clase al input
+            className={styles.input} 
           />
-          <button className={styles.button} onClick={verificarIngreso}>Verificar</button>
+          <button hidden={shouldHide} className={styles.button} onClick={verificarIngreso}>Verificar</button>
         </div>
         {result && <p className={`${styles.result} ${result === 'Correcto' ? styles.correct : styles.incorrect}`}>{result}</p>}
         <button className={styles.button} onClick={generateRandomNumber}>Siguiente país</button>
