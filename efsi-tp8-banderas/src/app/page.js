@@ -1,4 +1,3 @@
-// pages/index.js
 "use client";
 import Image from 'next/image';
 import api from './api';
@@ -10,18 +9,15 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [randomNumber, setRandomNumber] = useState(null);
-  const [nombre, setNombre] = useState(localStorage.getItem("nombre"));
-
-  useEffect(() => {
-      if (nombre) {
-        localStorage.setItem("nombre", nombre);
-      }
-    }, [nombre]);
+  const [inputValue, setInputValue] = useState('');
+  const [result, setResult] = useState(null);
 
   // Generar número aleatorio
   const generateRandomNumber = () => {
     const rnd = Math.floor(Math.random() * 100); // Genera un número entre 0 y 99
     setRandomNumber(rnd);
+    setInputValue(''); // Resetea el valor del input
+    setResult(null); // Resetea el resultado
   };
 
   useEffect(() => {
@@ -43,6 +39,22 @@ const Home = () => {
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const verificarIngreso = () => {
+    if (randomNumber !== null) {
+      const countryName = countries[randomNumber].name.toLowerCase();
+      const userInput = inputValue.toLowerCase();
+      if (userInput === countryName) {
+        setResult('Correcto');
+      } else {
+        setResult('Incorrecto');
+      }
+    }
+  };
+
   return (
     <div className={styles.container}>
       <main className={styles.main}>
@@ -53,22 +65,26 @@ const Home = () => {
             <Image 
               src={countries[randomNumber].flag} 
               alt={`Bandera de ${countries[randomNumber].name}`} 
-              width={100} 
-              height={50} 
+              width={700} 
+              height={350} 
+              className={styles.flagImage}
             />
             <p>{countries[randomNumber].name}</p>
           </div>
         )}
 
-        <div className={styles.center}>
-          {nombre}
+        <div className={styles.inputContainer}>
+          <input 
+            type="text" 
+            value={inputValue} 
+            onChange={handleInputChange} 
+            placeholder="Nombre del país"
+            className={styles.input} // Añade una clase al input
+          />
+          <button className={styles.button} onClick={verificarIngreso}>Verificar</button>
         </div>
-
-        <div className={styles.center}>
-          <input type="text" onKeyUp={ (e) => setNombre(e.target.value)} />
-        </div>
-
-        <button className={styles.button} onClick={generateRandomNumber}>Continuar</button>
+        {result && <p className={`${styles.result} ${result === 'Correcto' ? styles.correct : styles.incorrect}`}>{result}</p>}
+        <button className={styles.button} onClick={generateRandomNumber}>Siguiente país</button>
       </main>
     </div>
   );
