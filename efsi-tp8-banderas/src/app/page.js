@@ -10,6 +10,13 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [randomNumber, setRandomNumber] = useState(null);
+  const [nombre, setNombre] = useState(localStorage.getItem("nombre"));
+
+  useEffect(() => {
+      if (nombre) {
+        localStorage.setItem("nombre", nombre);
+      }
+    }, [nombre]);
 
   // Generar número aleatorio
   const generateRandomNumber = () => {
@@ -52,7 +59,16 @@ const Home = () => {
             <p>{countries[randomNumber].name}</p>
           </div>
         )}
-        <button className={styles.button} onClick={generateRandomNumber}>Generar Nuevo Número</button>
+
+        <div className={styles.center}>
+          {nombre}
+        </div>
+
+        <div className={styles.center}>
+          <input type="text" onKeyUp={ (e) => setNombre(e.target.value)} />
+        </div>
+
+        <button className={styles.button} onClick={generateRandomNumber}>Continuar</button>
       </main>
     </div>
   );
